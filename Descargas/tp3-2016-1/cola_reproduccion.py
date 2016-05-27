@@ -1,4 +1,5 @@
 import os
+import ListaEnlazada
 
 from cancion import Cancion
 
@@ -12,6 +13,7 @@ class ColaDeReproduccion:
 	def __init__(self, lista_canciones = []):
 		""" Recibe una lista de objetos de clase Cancion con las canciones que se quieren
 		reproducir."""
+		self.lista=ListaEnlazada.ListaEnlazada()
 		self.prim=None
 		self.actual=self.prim
 		for x in lista_canciones:
@@ -46,22 +48,52 @@ class ColaDeReproduccion:
 			self.prim=Cancion(ruta_cancion)
 			self.prim.anterior=None
 			self.actual=self.prim
+			self.lista.append(["add",self.prim])
 		else:
 			actual=self.prim
 			while actual.prox is not None:
 				actual=actual.prox
 			actual.prox=Cancion(ruta_cancion)
 			actual.prox.atenrior=actual
+			self.lista.append(["add",actual.prox])
 		#raise NotImplementedError()
 
 	def remover_cancion(self, ruta_cancion):
 		""" Remueve una Cancion de la cola a partir de su ruta. Devuelve True si se removio
 		correctamente, False en caso contrario. Esta accion puede deshacerse y rehacerse."""
-		raise NotImplementedError()
+		anterior=self.prim
+		actual=anterior.prox
+		if(anterior.ruta is ruta_cancion):
+			self.lista.append(["rm",anterior])
+			self.prim=anterior.prox
+			return True
+		else:
+			try:
+				while(actual.ruta is not ruta_cancion):
+					anterior=actual
+					actual=actual.prox
+				self.lista.append(["rm",actual])
+				anterior.prox=actual.prox
+				return True
+			except AttributeError:
+				return False
+
+		#raise NotImplementedError()
 
 	def deshacer_modificacion(self):
 		""" Deshace la ultima accion realizada. Devuelve True si pudo deshacerse, False en caso
 		contrario."""
+		try:
+			hecho=self.lista.pop()
+			if(hecho[0] is "rm"):
+				self.agregar_cancion(hecho[1].ruta)
+				return True
+			elif(hecho[0] is "add"):
+				self.remover_cancion(hecho[1].ruta)
+				actual=self.prim
+				return True
+		except IndexError:
+			return False
 		raise NotImplementedError()
 
 	def rehacer_modificacion(self):
