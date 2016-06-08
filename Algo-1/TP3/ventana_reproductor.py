@@ -204,23 +204,17 @@ class WidgetColaReproduccion():
 
 	def actualizar(self):
 		""" Actualiza la informacion de las canciones de la cola de reproduccion que se muestran en el widget."""
-		canciones=self.cola.obtener_n_siguientes(self.CANTIDAD_CANCIONES_MOSTRADAS)
-		i=0
-		print("actualizando")
-		for x in (canciones):
-			print(x.obtener_ruta())
-			print("hola")
-			self.label_cancion[i].text=""
-			self.label_cancion[i].text=x.obtener_titulo()+" "+x.obtener_artista()
-			i+=1
-		if(i<=self.CANTIDAD_CANCIONES_MOSTRADAS):
-			for x in range(i,self.CANTIDAD_CANCIONES_MOSTRADAS):
-				self.label_cancion[i].text=""
+		self.canciones=self.cola.obtener_n_siguientes(self.CANTIDAD_CANCIONES_MOSTRADAS)
 		self.dibujar()
 		#raise NotImplementedError()
 
 	def dibujar(self):
 		""" Dibuja la lista de canciones de la cola de reproduccion en la pantalla."""
-		#self.clear()
-		self.batch.draw()
+		i=0
+		for x in (self.canciones):
+			self.label_cancion[i].text=x.obtener_titulo()+" "+x.obtener_artista()
+			i+=1
+		if(i<=self.CANTIDAD_CANCIONES_MOSTRADAS):
+			for x in range(i,self.CANTIDAD_CANCIONES_MOSTRADAS):
+				self.label_cancion[i].text=""
 		#raise NotImplementedError()
